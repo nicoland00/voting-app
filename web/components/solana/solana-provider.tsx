@@ -12,7 +12,7 @@ import {
 } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { ReactNode, useCallback, useMemo } from 'react';
-import { useCluster } from '../cluster/cluster-data-access';
+import { useVoting } from '../voting-app/voting-app-data-access';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -23,8 +23,8 @@ export const WalletButton = dynamic(
 );
 
 export function SolanaProvider({ children }: { children: ReactNode }) {
-  const { cluster } = useCluster();
-  const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+  const { network } = useVoting();
+  const endpoint = useMemo(() => network.endpoint, [network]);
   const onError = useCallback((error: WalletError) => {
     console.error(error);
   }, []);

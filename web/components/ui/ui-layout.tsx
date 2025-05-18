@@ -9,10 +9,10 @@ import { usePathname } from 'next/navigation';
 
 import { AccountChecker } from '../account/account-ui';
 import {
-  ClusterChecker,
-  ClusterUiSelect,
+  VotingChecker,
+  VotingUiSelect,
   ExplorerLink,
-} from '../cluster/cluster-ui';
+} from '../voting-app/voting-app-ui';
 import toast, { Toaster } from 'react-hot-toast';
 
 export function UiLayout({
@@ -46,12 +46,12 @@ export function UiLayout({
         </div>
         <div className="flex-none space-x-2">
           <WalletButton />
-          <ClusterUiSelect />
+          <VotingUiSelect />
         </div>
       </div>
-      <ClusterChecker>
+      <VotingChecker>
         <AccountChecker />
-      </ClusterChecker>
+      </VotingChecker>
       <div className="flex-grow mx-4 lg:mx-auto">
         <Suspense
           fallback={

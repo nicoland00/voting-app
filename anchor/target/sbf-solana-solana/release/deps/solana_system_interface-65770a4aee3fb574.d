@@ -1,0 +1,9 @@
+/Users/nicofernandez/solana/voting-app/anchor/target/sbf-solana-solana/release/deps/libsolana_system_interface-65770a4aee3fb574.rmeta: /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/lib.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/error.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/instruction.rs
+
+/Users/nicofernandez/solana/voting-app/anchor/target/sbf-solana-solana/release/deps/libsolana_system_interface-65770a4aee3fb574.rlib: /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/lib.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/error.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/instruction.rs
+
+/Users/nicofernandez/solana/voting-app/anchor/target/sbf-solana-solana/release/deps/solana_system_interface-65770a4aee3fb574.d: /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/lib.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/error.rs /Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/instruction.rs
+
+/Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/lib.rs:
+/Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/error.rs:
+/Users/nicofernandez/.cargo/registry/src/index.crates.io-6f17d22bba15001f/solana-system-interface-1.0.0/src/instruction.rs:

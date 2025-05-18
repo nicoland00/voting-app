@@ -6,8 +6,8 @@ import { IconRefresh } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { AppModal, ellipsify } from '../ui/ui-layout';
-import { useCluster } from '../cluster/cluster-data-access';
-import { ExplorerLink } from '../cluster/cluster-ui';
+import { useVoting } from '../voting-app/voting-app-data-access';
+import { ExplorerLink } from '../voting-app/voting-app-ui';
 import {
   useGetBalance,
   useGetSignatures,
@@ -15,6 +15,120 @@ import {
   useRequestAirdrop,
   useTransferSol,
 } from './account-data-access';
+
+function BalanceSol({ balance }: { balance: number }) {
+  return (
+    <span>{Math.round((balance / LAMPORTS_PER_SOL) * 100000) / 100000}</span>
+  );
+}
+
+function ModalReceive({
+  hide,
+  show,
+  address,
+}: {
+  hide: () => void;
+  show: boolean;
+  address: PublicKey;
+}) {
+  return (
+    <AppModal title="Receive" hide={hide} show={show}>
+      <p>Receive assets by sending them to your public key:</p>
+      <code>{address.toString()}</code>
+    </AppModal>
+  );
+}
+
+function ModalAirdrop({
+  hide,
+  show,
+  address,
+}: {
+  hide: () => void;
+  show: boolean;
+  address: PublicKey;
+}) {
+  const mutation = useRequestAirdrop({ address });
+  const [amount, setAmount] = useState('2');
+
+  return (
+    <AppModal
+      hide={hide}
+      show={show}
+      title="Airdrop"
+      submitDisabled={!amount || mutation.isPending}
+      submitLabel="Request Airdrop"
+      submit={() => mutation.mutateAsync(parseFloat(amount)).then(() => hide())}
+    >
+      <input
+        disabled={mutation.isPending}
+        type="number"
+        step="any"
+        min="1"
+        placeholder="Amount"
+        className="input input-bordered w-full"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+    </AppModal>
+  );
+}
+
+function ModalSend({
+  hide,
+  show,
+  address,
+}: {
+  hide: () => void;
+  show: boolean;
+  address: PublicKey;
+}) {
+  const wallet = useWallet();
+  const mutation = useTransferSol({ address });
+  const [destination, setDestination] = useState('');
+  const [amount, setAmount] = useState('1');
+
+  if (!address || !wallet.sendTransaction) {
+    return <div>Wallet not connected</div>;
+  }
+
+  return (
+    <AppModal
+      hide={hide}
+      show={show}
+      title="Send"
+      submitDisabled={!destination || !amount || mutation.isPending}
+      submitLabel="Send"
+      submit={() => {
+        mutation
+          .mutateAsync({
+            destination: new PublicKey(destination),
+            amount: parseFloat(amount),
+          })
+          .then(() => hide());
+      }}
+    >
+      <input
+        disabled={mutation.isPending}
+        type="text"
+        placeholder="Destination"
+        className="input input-bordered w-full"
+        value={destination}
+        onChange={(e) => setDestination(e.target.value)}
+      />
+      <input
+        disabled={mutation.isPending}
+        type="number"
+        step="any"
+        min="1"
+        placeholder="Amount"
+        className="input input-bordered w-full"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+    </AppModal>
+  );
+}
 
 export function AccountBalance({ address }: { address: PublicKey }) {
   const query = useGetBalance({ address });
@@ -30,6 +144,7 @@ export function AccountBalance({ address }: { address: PublicKey }) {
     </div>
   );
 }
+
 export function AccountChecker() {
   const { publicKey } = useWallet();
   if (!publicKey) {
@@ -37,8 +152,9 @@ export function AccountChecker() {
   }
   return <AccountBalanceCheck address={publicKey} />;
 }
+
 export function AccountBalanceCheck({ address }: { address: PublicKey }) {
-  const { cluster } = useCluster();
+  const { network } = useVoting();
   const mutation = useRequestAirdrop({ address });
   const query = useGetBalance({ address });
 
@@ -49,7 +165,7 @@ export function AccountBalanceCheck({ address }: { address: PublicKey }) {
     return (
       <div className="alert alert-warning text-warning-content/80 rounded-none flex justify-center">
         <span>
-          You are connected to <strong>{cluster.name}</strong> but your account
+          You are connected to <strong>{network.name}</strong> but your account
           is not found on this cluster.
         </span>
         <button
@@ -68,7 +184,7 @@ export function AccountBalanceCheck({ address }: { address: PublicKey }) {
 
 export function AccountButtons({ address }: { address: PublicKey }) {
   const wallet = useWallet();
-  const { cluster } = useCluster();
+  const { network } = useVoting();
   const [showAirdropModal, setShowAirdropModal] = useState(false);
   const [showReceiveModal, setShowReceiveModal] = useState(false);
   const [showSendModal, setShowSendModal] = useState(false);
@@ -92,7 +208,7 @@ export function AccountButtons({ address }: { address: PublicKey }) {
       />
       <div className="space-x-2">
         <button
-          disabled={cluster.network?.includes('mainnet')}
+          disabled={network.network?.includes('mainnet')}
           className="btn btn-xs lg:btn-md btn-outline"
           onClick={() => setShowAirdropModal(true)}
         >
@@ -197,7 +313,6 @@ export function AccountTokens({ address }: { address: PublicKey }) {
                     </td>
                   </tr>
                 ))}
-
                 {(query.data?.length ?? 0) > 5 && (
                   <tr>
                     <td colSpan={4} className="text-center">
@@ -314,119 +429,5 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
         </div>
       )}
     </div>
-  );
-}
-
-function BalanceSol({ balance }: { balance: number }) {
-  return (
-    <span>{Math.round((balance / LAMPORTS_PER_SOL) * 100000) / 100000}</span>
-  );
-}
-
-function ModalReceive({
-  hide,
-  show,
-  address,
-}: {
-  hide: () => void;
-  show: boolean;
-  address: PublicKey;
-}) {
-  return (
-    <AppModal title="Receive" hide={hide} show={show}>
-      <p>Receive assets by sending them to your public key:</p>
-      <code>{address.toString()}</code>
-    </AppModal>
-  );
-}
-
-function ModalAirdrop({
-  hide,
-  show,
-  address,
-}: {
-  hide: () => void;
-  show: boolean;
-  address: PublicKey;
-}) {
-  const mutation = useRequestAirdrop({ address });
-  const [amount, setAmount] = useState('2');
-
-  return (
-    <AppModal
-      hide={hide}
-      show={show}
-      title="Airdrop"
-      submitDisabled={!amount || mutation.isPending}
-      submitLabel="Request Airdrop"
-      submit={() => mutation.mutateAsync(parseFloat(amount)).then(() => hide())}
-    >
-      <input
-        disabled={mutation.isPending}
-        type="number"
-        step="any"
-        min="1"
-        placeholder="Amount"
-        className="input input-bordered w-full"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-    </AppModal>
-  );
-}
-
-function ModalSend({
-  hide,
-  show,
-  address,
-}: {
-  hide: () => void;
-  show: boolean;
-  address: PublicKey;
-}) {
-  const wallet = useWallet();
-  const mutation = useTransferSol({ address });
-  const [destination, setDestination] = useState('');
-  const [amount, setAmount] = useState('1');
-
-  if (!address || !wallet.sendTransaction) {
-    return <div>Wallet not connected</div>;
-  }
-
-  return (
-    <AppModal
-      hide={hide}
-      show={show}
-      title="Send"
-      submitDisabled={!destination || !amount || mutation.isPending}
-      submitLabel="Send"
-      submit={() => {
-        mutation
-          .mutateAsync({
-            destination: new PublicKey(destination),
-            amount: parseFloat(amount),
-          })
-          .then(() => hide());
-      }}
-    >
-      <input
-        disabled={mutation.isPending}
-        type="text"
-        placeholder="Destination"
-        className="input input-bordered w-full"
-        value={destination}
-        onChange={(e) => setDestination(e.target.value)}
-      />
-      <input
-        disabled={mutation.isPending}
-        type="number"
-        step="any"
-        min="1"
-        placeholder="Amount"
-        className="input input-bordered w-full"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-    </AppModal>
   );
 }

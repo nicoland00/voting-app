@@ -1,6 +1,6 @@
 import './global.css';
 import { UiLayout } from '@/components/ui/ui-layout';
-import { ClusterProvider } from '@/components/cluster/cluster-data-access';
+import { VotingProvider } from '@/components/voting-app/voting-app-data-access';
 import { SolanaProvider } from '@/components/solana/solana-provider';
 import { ReactQueryProvider } from './react-query-provider';
 
@@ -24,11 +24,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ReactQueryProvider>
-          <ClusterProvider>
+          <VotingProvider>
             <SolanaProvider>
               <UiLayout links={links}>{children}</UiLayout>
             </SolanaProvider>
-          </ClusterProvider>
+          </VotingProvider>
         </ReactQueryProvider>
       </body>
     </html>
